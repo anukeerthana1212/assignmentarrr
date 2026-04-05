@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Markerless AR</title>
+
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+</head>
+
+<body style="margin:0; overflow:hidden;">
+
+<a-scene cursor="rayOrigin: mouse">
+
+  <!-- Camera -->
+  <a-camera position="0 1.6 3"></a-camera>
+
+  <!-- Ground -->
+  <a-plane 
+    rotation="-90 0 0" 
+    width="10" 
+    height="10" 
+    color="#7BC8A4"
+    id="ground">
+  </a-plane>
+
+  <!-- Model -->
+  <a-entity
+    id="model"
+    gltf-model="deer_statue_stylized.glb"
+    scale="0.2 0.2 0.2"
+    visible="false">
+  </a-entity>
+
+</a-scene>
+
+<script>
+let model = document.querySelector("#model");
+let ground = document.querySelector("#ground");
+
+ground.addEventListener("click", (e) => {
+  model.setAttribute("visible", true);
+  model.setAttribute("position", e.detail.intersection.point);
+});
+</script>
+
+</body>
+</html>
