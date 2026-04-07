@@ -1,4 +1,4 @@
-<\!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en">
 
@@ -74,13 +74,13 @@
 
         window.addEventListener('touchstart', function(){
 
-          let box = document.querySelector("#box");
+          let box = document.querySelector("#model");
 
           let circle = document.querySelector("#circle");
 
           let pos = circle.getAttribute('position');
 
-          // Place the box at the current position of the circle indicator
+          // Place the model at the current position of the circle indicator
 
           box.setAttribute('position', pos);
 
@@ -135,9 +135,9 @@
 
         ></a-ring>
 
-        <!-- 3D Box, initially placed off-screen, moved on touch -->
+        <!-- 3D Model instead of box -->
 
-        <a-box id="box" position="0 -10 -1" color="red" scale="0.2 0.2 0.2"></a-box>
+        <a-entity id="model" position="0 -10 -1" scale="0.1 0.1 0.1" gltf-model="model1.glb"></a-entity>
 
     </a-scene>
 
