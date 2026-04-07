@@ -1,46 +1,146 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>WebXR AR</title>
+<\!DOCTYPE html>
 
-  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Stable A-Frame -->
+
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+    <!-- Local aframe-ar -->
+
+    <script src="./aframe-ar-main/dist/aframe-ar.min.js"></script>
+
+    <title>MarkLess</title>
+
 </head>
 
-<body style="margin:0; overflow:hidden;">
+<body>
 
-<a-scene
-  vr-mode-ui="enabled: false"
-  renderer="logarithmicDepthBuffer: true;"
-  xrweb="mode: ar">
+    <script>
 
-  <!-- Camera -->
-  <a-camera position="0 1.6 0"></a-camera>
+      function showMessage(message){
 
-  <!-- Model -->
-  <a-entity id="model"
-            gltf-model="model1.glb"
-            scale="0.2 0.2 0.2"
-            visible="false">
-  </a-entity>
+        let hud = document.querySelector("#hud");
 
-</a-scene>
+        hud.setAttribute('value', message);
 
-<script>
-  const scene = document.querySelector('a-scene');
-  const model = document.querySelector('#model');
+      }
 
-  scene.addEventListener('click', () => {
-    const camera = document.querySelector('[camera]');
-    const direction = new THREE.Vector3();
-    camera.object3D.getWorldDirection(direction);
+        AFRAME.registerComponent('ar-logic',{
 
-    const position = camera.object3D.position.clone();
-    position.add(direction.multiplyScalar(2));
+            init: function(){
 
-    model.setAttribute('position', position);
-    model.setAttribute('visible', true);
-  });
-</script>
+                showMessage('ar-logic running');
+
+            },
+
+            tick : function(){
+
+              let cam = document.querySelector("#cam");
+
+              if(!cam){return;}
+
+              showMessage('cam detected');
+
+              // Perform a raycast from the camera to detect a surface intersection
+
+              let collision = cam.components.raycaster.getIntersection(this.el);
+
+              if(!collision){
+
+                showMessage('No collision detected.');
+
+                return;
+
+              }
+
+              showMessage('Collision: X=' + collision.point.x.toFixed(2) + " Z=" + collision.point.z.toFixed(2));
+
+              let circle = document.querySelector("#circle");
+
+              // Update the indicator (circle) position to the hit-test point
+
+              circle.setAttribute('position', collision.point);
+
+            }
+
+        });
+
+        window.addEventListener('touchstart', function(){
+
+          let box = document.querySelector("#box");
+
+          let circle = document.querySelector("#circle");
+
+          let pos = circle.getAttribute('position');
+
+          // Place the box at the current position of the circle indicator
+
+          box.setAttribute('position', pos);
+
+          showMessage('Object placed at: X=' + pos.x.toFixed(2) + " Y=" + pos.y.toFixed(2) + " Z=" + pos.z.toFixed(2));
+
+        });
+
+    </script>
+
+
+    <a-scene ar ar-logic>
+
+        <!-- Camera setup with the AR Raycaster for hit-testing -->
+
+        <a-camera id="cam" ar-raycaster raycaster="objects:none;">
+
+          <!-- HUD text overlay for status messages -->
+
+          <a-text id="hud"
+
+            value="Loading AR..."
+
+            position="0 -0.1 -0.25"
+
+            align="center"
+
+            wrap-count="800"
+
+            color="#FFF"
+
+            background-color="#000"
+
+            opacity="0.7"
+
+          ></a-text>
+
+        </a-camera>
+
+        <!-- Ring indicator that follows the detected surface -->
+
+        <a-ring
+
+          id="circle"
+
+          rotation="-90 0 0"
+
+          radius-inner="0.01"
+
+          radius-outer="0.02"
+
+          color="#00FF00"
+
+        ></a-ring>
+
+        <!-- 3D Box, initially placed off-screen, moved on touch -->
+
+        <a-box id="box" position="0 -10 -1" color="red" scale="0.2 0.2 0.2"></a-box>
+
+    </a-scene>
 
 </body>
+
 </html>
